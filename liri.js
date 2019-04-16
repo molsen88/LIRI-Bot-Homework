@@ -1,157 +1,91 @@
-require( "dotenv" ).config();
+var fs = require( "fs" );
+// var inquirer = require( "inquirer" );
+var axios = require( "axios" )
+var moment = require( "moment" )
+var Spotify = require( 'node-spotify-api' );
+var Keys = require( "./keys" );
 
-var keys = require( "./keys.js" );
-
-//This is the axios npm required for pulling info 
-
-var axios = require( "axios" );
-var inquirer = require( "inquirer" );
-// var spotify = require( "spotify" )
-
-// var userInput = "";
-
-// function Start() {
-//     inquirer.prompt( [
-//         {
-//             type: "list",
-//             message: "What information are you looking for",
-//             choices: ["movie", "music", "concerts"],
-//             name: "info"
-//         }
+var choice = process.argv[2];
+var info = process.argv[3];
 
 
-//     ] )
-// }
+switch ( choice ) {
+    case "movie-this":
+        Movie();
+        break;
 
-// function Music() {
-//     var queryUrl = "https://rest.bandsintown.com/artists//events?app_id=codingbootcamp";
-//     console.log( queryUrl );
-//     inquirer.prompt( [
-//         {
-//             type: "input",
-//             name: "userInput",
-//             message: "What band are you looking for?"
-//         }
-//     ] ).then( function ( response ) {
-//         axios.get( "https://rest.bandsintown.com/artists/" + response.userInput + "/events?app_id=codingbootcamp" ).then(
-//             function ( response ) {
-//                 console.log( "Name of venue: " + respons.data.events[i].venue.name )
-//             }
-//         )
-//     } )
-// }
+    case "concert-this":
+        Bands();
+        break;
 
-// function Bands() {
-//     var queryUrl = "https://rest.bandsintown.com/artists//events?app_id=codingbootcamp";
-//     console.log( queryUrl );
-//     inquirer.prompt( [
-//         {
-//             type: "input",
-//             name: "userInput",
-//             message: "What band are you looking for?"
-//         }
-//     ] ).then( function ( response ) {
-//         axios.get( "https://rest.bandsintown.com/artists/" + response.userInput + "/events?app_id=codingbootcamp" ).then(
-//             function ( response ) {
-//                 console.log( "Name of venue: " + response.data.artists.events.venue.name )
-//             }
-//         )
-//     } )
-// }
-// var options = {
-//     provider: "spotify",
-//     apiKey: 553f5c8e2ae144ef9f6fa43288e246a1;
-// };
-// function Music() {
-
-
-//     var queryURL = 
-// }
-
-
-
-
+    case "spotify-this-song":
+        Music();
+        break;
+}
 
 function Movie() {
     var queryUrl = "http://www.omdbapi.com/?t=&y=&plot=short&apikey=trilogy";
     console.log( queryUrl );
-    inquirer.prompt( [
-        {
-            type: "input",
-            name: "userInput",
-            message: "What movie are you looking for?"
+
+    // for ( var j = 2; j < choice.length; j++ ) {
+
+    //     if ( j > 2 && j < choice.length ) {
+    //         info = info + "+" + choice[j];
+    //     }
+    //     else {
+    //         info += choice[j];
+
+    //     }
+    // }
+
+
+    axios.get( "http://www.omdbapi.com/?t=" + info + "&y=&plot=short&apikey=trilogy" ).then(
+        function ( response ) {
+            console.log( "Title: " + response.data.Title );
+            console.log( "Release: " + response.data.Year );
+            console.log( "IMDB rating: " + response.data.imdbRating );
+            //    * Rotten Tomatoes Rating of the movie.
+            // console.log( "Rotten Tomatoes rating: " + response.data.Ratings[1].Value );
+            console.log( "Country origin: " + response.data.Country );
+            console.log( "Language: " + response.data.Language );
+            console.log( "Plot: " + response.data.Plot );
+            console.log( "Actors: " + response.data.Actors );
+        } );
+
+};
+
+function Bands() {
+    var queryUrl = "https://rest.bandsintown.com/artists//events?app_id=codingbootcamp";
+    console.log( queryUrl );
+    axios.get( "https://rest.bandsintown.com/artists/" + info + "/events?app_id=codingbootcamp" ).then(
+        function ( response ) {
+            for ( var i = 0; i < 6; i++ ) {
+                console.log( "Name of the venue: " + response.data[i].venue.name )
+                console.log( "Venue location: " + response.data[i].venue.city )
+                console.log( "Venue date: " + response.data[i].datetime )
+
+            }
+        } )
+}
+
+
+
+function Music() {
+
+    var Spotify = new Spotify( keys.spotifyKeys );
+    if ( !info ) {
+        info = 'The Sign';
+    }
+    Spotify.search( { type: 'track', query: info }, function ( err, data ) {
+        if ( err ) {
+            console.log( 'Error occurred: ' + err );
+            return;
         }
 
-    ] ).then( function ( response ) {
-        axios.get( "http://www.omdbapi.com/?t=" + response.userInput + "&y=&plot=short&apikey=trilogy" ).then(
-            function ( response ) {
-                console.log( "Title: " + response.data.Title );
-                console.log( "Release: " + response.data.Year );
-                console.log( "IMDB rating: " + response.data.imdbRating );
-                //    * Rotten Tomatoes Rating of the movie.
-                console.log( "Rotten Tomatoes rating: " + response.data.Ratings[1].Value );
-                console.log( "Country origin: " + response.data.Country );
-                console.log( "Language: " + response.data.Language );
-                console.log( "Title: " + response.data.Plot );
-                console.log( "Title: " + response.data.Actors );
-            } );
-
-
+        var songInfo = data.tracks.items;
+        console.log( "Artist(s): " + songInfo[0].artists[0].name );
+        console.log( "Song Name: " + songInfo[0].name );
+        console.log( "Preview Link: " + songInfo[0].preview_url );
+        console.log( "Album: " + songInfo[0].album.name );
     } );
 }
-// Bands();
-Movie();
-
-// Start();
-
-
-// if user picks out of three options then run each function of the options
-
-
-
-
-
-
-// var axios = require( "axios" );
-// var artist = process.argv;
-
-
-// var queryURL = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
-// console.log( queryURL )
-// axios.get( queryURL ).then(
-//     function ( response ) {
-//         console.log( "Name of Venue: " + response.venue[i].name );
-//         console.log( "Venue location " + response.venue.city );
-//         console.log( "Date of the event " + response.datetime );
-//     }
-// )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// var queryURL = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
