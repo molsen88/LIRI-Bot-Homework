@@ -27,16 +27,7 @@ function Movie() {
     var queryUrl = "http://www.omdbapi.com/?t=&y=&plot=short&apikey=trilogy";
     console.log( queryUrl );
 
-    // for ( var j = 2; j < choice.length; j++ ) {
 
-    //     if ( j > 2 && j < choice.length ) {
-    //         info = info + "+" + choice[j];
-    //     }
-    //     else {
-    //         info += choice[j];
-
-    //     }
-    // }
 
 
     axios.get( "http://www.omdbapi.com/?t=" + info + "&y=&plot=short&apikey=trilogy" ).then(
