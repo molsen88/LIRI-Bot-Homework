@@ -6,7 +6,7 @@ var Spotify = require( 'node-spotify-api' );
 var Keys = require( "./keys" );
 
 var choice = process.argv[2];
-var info = process.argv[3];
+var info = process.argv.slice( 3 ).join( " " );
 
 
 switch ( choice ) {
